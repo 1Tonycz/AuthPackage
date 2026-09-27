@@ -1,0 +1,45 @@
+{block title}Úprava skupiny{/block}
+
+{block content}
+<h1>Úprava skupiny {$editedGroup->getName()}</h1>
+
+{form groupForm}
+<div class="ma-form">
+	<div n:foreach="$form->getErrors() as $error" class="ma-form__error">{$error}</div>
+	{label name /}{input name}
+	{label description /}{input description}
+</div>
+
+<div class="ma-matrix">
+	<h2>Oprávnění</h2>
+	{if $editedGroup->isSuperuser()}
+		<p>Skupina <strong>admin</strong> má automaticky všechna oprávnění, výběr níže se nepoužije.</p>
+	{/if}
+	{foreach $permissionsByPackage as $package => $permissions}
+		<div class="ma-matrix__package">{$package}</div>
+		{var $byResource = []}
+		{foreach $permissions as $p}
+			{do $byResource[$p->getResource()][] = $p}
+		{/foreach}
+		{foreach $byResource as $resource => $items}
+			<div class="ma-matrix__resource">{$resource}</div>
+			<span n:foreach="$items as $p" class="ma-matrix__item {if !$p->isActive()}ma-matrix__item--inactive{/if}">
+				{input permissions:$p->getId()}
+				<label n:name="permissions:$p->getId()">
+					{$p->getPrivilege()}
+					{if $p->getDescription()} - {$p->getDescription()}{/if}
+					{if !$p->isActive()} (neaktivní balíček){/if}
+				</label>
+			</span>
+		{/foreach}
+	{/foreach}
+	{if count($permissionsByPackage) === 0}
+		<p>Žádná oprávnění v databázi, spusťte <code>bin/console auth:sync-permissions</code>.</p>
+	{/if}
+</div>
+
+<div class="ma-form__submit" style="margin-top: 16px">
+	{input send class => 'ma-btn'} <a class="ma-btn ma-btn--secondary" n:href="default">Zpět</a>
+</div>
+{/form}
+{/block}

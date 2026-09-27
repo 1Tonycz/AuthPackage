@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="robots" content="noindex">
+	<title>Přihlášení</title>
+	<style>
+		* { box-sizing: border-box; }
+		body.ma-sign { margin: 0; min-height: 100vh; display: grid; place-items: center; font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; background: #1f2733; }
+		.ma-sign__card { background: #fff; border-radius: 10px; padding: 32px; width: 360px; max-width: calc(100vw - 32px); }
+		.ma-sign__card h1 { margin: 0 0 18px; font-size: 20px; }
+		.ma-sign__card label { display: block; font-weight: 600; margin: 12px 0 4px; }
+		.ma-sign__card input[type=text], .ma-sign__card input[type=password] { width: 100%; padding: 9px 10px; border: 1px solid #dcdfe4; border-radius: 6px; font: inherit; }
+		.ma-sign__remember { display: flex; align-items: center; gap: 8px; margin: 14px 0; }
+		.ma-sign__remember label { display: inline; margin: 0; font-weight: 400; }
+		.ma-sign__card button, .ma-sign__card input[type=submit] { width: 100%; padding: 10px; border: 0; border-radius: 6px; background: #2f6fed; color: #fff; font: inherit; font-weight: 600; cursor: pointer; }
+		.ma-sign__error { background: #fbe3e3; color: #9d2626; padding: 8px 12px; border-radius: 6px; margin-bottom: 12px; }
+		.ma-flash { background: #e2f2e5; color: #1d6b2e; padding: 8px 12px; border-radius: 6px; margin-bottom: 12px; }
+	</style>
+</head>
+<body class="ma-sign">
+<div class="ma-sign__card">
+	<h1>Přihlášení do administrace</h1>
+	<div n:foreach="$flashes as $flash" class="ma-flash">{$flash->message}</div>
+	{form signInForm}
+		<div n:foreach="$form->getOwnErrors() as $error" class="ma-sign__error">{$error}</div>
+		{label username /}
+		{input username}
+		{label password /}
+		{input password}
+		<div class="ma-sign__remember">{input remember} {label remember /}</div>
+		{input send}
+	{/form}
+</div>
+</body>
+</html>

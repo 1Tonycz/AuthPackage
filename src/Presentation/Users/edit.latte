@@ -1,0 +1,16 @@
+{block title}Úprava uživatele{/block}
+
+{block content}
+<h1>Úprava uživatele {$editedUser->getUsername()}</h1>
+<div class="ma-form">
+	{form userForm}
+		<div n:foreach="$form->getErrors() as $error" class="ma-form__error">{$error}</div>
+		{label username /}{input username}
+		{label email /}{input email}
+		{label password /}{input password}
+		{label groups /}{input groups}
+		<label>{input active} Aktivní účet</label>
+		<div class="ma-form__submit">{input send class => 'ma-btn'} <a class="ma-btn ma-btn--secondary" n:href="default">Zpět</a></div>
+	{/form}
+</div>
+{/block}

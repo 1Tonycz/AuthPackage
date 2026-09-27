@@ -1,0 +1,35 @@
+{block title}Uživatelé{/block}
+
+{block content}
+<div class="ma-toolbar">
+	<h1>Uživatelé</h1>
+	<a n:if="$user->isAllowed('user', 'create')" class="ma-btn" n:href="create">Přidat uživatele</a>
+</div>
+
+<table class="ma-table">
+	<tr>
+		<th>Uživatelské jméno</th>
+		<th>E-mail</th>
+		<th>Skupiny</th>
+		<th>Stav</th>
+		<th>Poslední přihlášení</th>
+		<th></th>
+	</tr>
+	<tr n:foreach="$users as $u">
+		<td>{$u->getUsername()}</td>
+		<td>{$u->getEmail()}</td>
+		<td>{implode(', ', $u->getGroupNames())}</td>
+		<td>
+			{if $u->isActive()}<span class="ma-badge ma-badge--on">aktivní</span>
+			{else}<span class="ma-badge ma-badge--off">neaktivní</span>{/if}
+		</td>
+		<td>{$u->getLastLoginAt()?->format('j. n. Y H:i') ?? '-'}</td>
+		<td>
+			<a n:if="$user->isAllowed('user', 'edit')" class="ma-btn ma-btn--secondary ma-btn--small" n:href="edit $u->getId()">Upravit</a>
+			<a n:if="$user->isAllowed('user', 'delete')" class="ma-btn ma-btn--danger ma-btn--small" n:href="delete! $u->getId()"
+			   onclick="return confirm('Opravdu smazat uživatele {$u->getUsername()}?')">Smazat</a>
+		</td>
+	</tr>
+	<tr n:if="count($users) === 0"><td colspan="6">Zatím žádní uživatelé.</td></tr>
+</table>
+{/block}

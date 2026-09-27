@@ -1,0 +1,34 @@
+{block title}Historie změn{/block}
+
+{block content}
+<div class="ma-toolbar">
+	<h1>Historie změn</h1>
+	<form action="{link default}" method="get">
+		<input type="text" name="filter" value="{$filter}" placeholder="Hledat akci (např. user.login)">
+		<button class="ma-btn ma-btn--secondary ma-btn--small" type="submit">Filtrovat</button>
+	</form>
+</div>
+
+<table class="ma-table">
+	<tr>
+		<th>Kdy</th>
+		<th>Kdo</th>
+		<th>Akce</th>
+		<th>Předmět</th>
+		<th>Detail</th>
+	</tr>
+	<tr n:foreach="$entries as $entry">
+		<td>{$entry->getCreatedAt()->format('j. n. Y H:i:s')}</td>
+		<td>{$entry->getUser()?->getUsername() ?? '-'}</td>
+		<td title="{$entry->getAction()}">{Matodo\Auth\Facade\AuditAction::labelOf($entry->getAction())}</td>
+		<td>{if $entry->getSubjectType()}{$entry->getSubjectType()} #{$entry->getSubjectId()}{else}-{/if}</td>
+		<td><code n:if="$entry->getData() !== null">{json_encode($entry->getData(), JSON_UNESCAPED_UNICODE)}</code></td>
+	</tr>
+	<tr n:if="count($entries) === 0"><td colspan="5">Žádné záznamy.</td></tr>
+</table>
+
+<div class="ma-pager">
+	<a n:if="$page > 1" class="ma-btn ma-btn--secondary ma-btn--small" n:href="default, page: $page - 1, filter: $filter">Novější</a>
+	<a n:if="$hasNext" class="ma-btn ma-btn--secondary ma-btn--small" n:href="default, page: $page + 1, filter: $filter">Starší</a>
+</div>
+{/block}

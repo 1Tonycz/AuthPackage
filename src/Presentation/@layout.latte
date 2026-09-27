@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="robots" content="noindex">
+	<title>{ifset title}{include title|stripHtml} · {/ifset}Administrace</title>
+	<style>
+		:root { --ma-bg: #f4f5f7; --ma-side: #1f2733; --ma-accent: #2f6fed; --ma-danger: #d64545; --ma-border: #dcdfe4; }
+		* { box-sizing: border-box; }
+		body.ma-admin { margin: 0; font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--ma-bg); color: #222; }
+		.ma-admin__wrap { display: flex; min-height: 100vh; }
+		.ma-sidebar { width: 220px; background: var(--ma-side); color: #cfd6df; flex-shrink: 0; }
+		.ma-sidebar__brand { display: block; padding: 18px 20px; color: #fff; font-weight: 700; text-decoration: none; letter-spacing: .04em; }
+		.ma-sidebar__nav a { display: block; padding: 10px 20px; color: #cfd6df; text-decoration: none; }
+		.ma-sidebar__nav a:hover, .ma-sidebar__nav a.is-active { background: rgba(255,255,255,.08); color: #fff; }
+		.ma-sidebar__section { padding: 14px 20px 4px; font-size: 11px; text-transform: uppercase; letter-spacing: .1em; opacity: .55; }
+		.ma-main { flex: 1; display: flex; flex-direction: column; }
+		.ma-topbar { display: flex; justify-content: space-between; align-items: center; background: #fff; border-bottom: 1px solid var(--ma-border); padding: 10px 24px; }
+		.ma-topbar__user { font-size: 14px; color: #555; }
+		.ma-topbar__user a { color: var(--ma-danger); text-decoration: none; margin-left: 12px; }
+		.ma-content { padding: 24px; max-width: 1100px; }
+		.ma-content h1 { margin-top: 0; font-size: 24px; }
+		.ma-flash { padding: 10px 14px; border-radius: 6px; margin-bottom: 14px; }
+		.ma-flash--info, .ma-flash--success { background: #e2f2e5; color: #1d6b2e; }
+		.ma-flash--error, .ma-flash--danger { background: #fbe3e3; color: #9d2626; }
+		.ma-table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid var(--ma-border); border-radius: 8px; overflow: hidden; }
+		.ma-table th, .ma-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--ma-border); vertical-align: middle; }
+		.ma-table th { background: #fafbfc; font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: #666; }
+		.ma-table tr:last-child td { border-bottom: 0; }
+		.ma-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 12px; }
+		.ma-badge--on { background: #e2f2e5; color: #1d6b2e; }
+		.ma-badge--off { background: #f0f0f0; color: #777; }
+		.ma-btn { display: inline-block; padding: 8px 14px; border: 0; border-radius: 6px; background: var(--ma-accent); color: #fff; font: inherit; font-size: 14px; text-decoration: none; cursor: pointer; }
+		.ma-btn--secondary { background: #e8eaee; color: #333; }
+		.ma-btn--danger { background: var(--ma-danger); }
+		.ma-btn--small { padding: 4px 10px; font-size: 13px; }
+		.ma-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 12px; flex-wrap: wrap; }
+		.ma-form { background: #fff; border: 1px solid var(--ma-border); border-radius: 8px; padding: 20px; max-width: 720px; }
+		.ma-form label { display: block; font-weight: 600; margin: 14px 0 4px; }
+		.ma-form label:first-child { margin-top: 0; }
+		.ma-form input[type=text], .ma-form input[type=email], .ma-form input[type=password], .ma-form input[type=datetime-local],
+		.ma-form select, .ma-form textarea { width: 100%; padding: 8px 10px; border: 1px solid var(--ma-border); border-radius: 6px; font: inherit; }
+		.ma-form select[multiple] { min-height: 110px; }
+		.ma-form .ma-form__submit { margin-top: 18px; }
+		.ma-form__error { color: var(--ma-danger); margin: 6px 0; }
+		.ma-matrix { background: #fff; border: 1px solid var(--ma-border); border-radius: 8px; padding: 4px 20px 20px; margin-top: 16px; }
+		.ma-matrix__package { margin: 16px 0 6px; font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: #888; }
+		.ma-matrix__resource { font-weight: 700; margin: 10px 0 4px; }
+		.ma-matrix__item { display: inline-flex; align-items: center; gap: 6px; margin: 2px 18px 2px 0; }
+		.ma-matrix__item--inactive { opacity: .45; }
+		.ma-inline-form { display: inline; }
+		.ma-pager { margin-top: 14px; display: flex; gap: 8px; }
+	</style>
+</head>
+<body class="ma-admin">
+<div class="ma-admin__wrap">
+	<aside class="ma-sidebar">
+		<a class="ma-sidebar__brand" n:href=":Auth:Users:default">Administrace</a>
+		<nav class="ma-sidebar__nav">
+			<div class="ma-sidebar__section">Uživatelé a práva</div>
+			{if $user->isAllowed('user', 'view')}<a n:href=":Auth:Users:default" n:class="$presenter->isLinkCurrent(':Auth:Users:*') ? is-active">Uživatelé</a>{/if}
+			{if $user->isAllowed('group', 'view')}<a n:href=":Auth:Groups:default" n:class="$presenter->isLinkCurrent(':Auth:Groups:*') ? is-active">Skupiny</a>{/if}
+			{if $user->isAllowed('audit', 'view')}<a n:href=":Auth:Audit:default" n:class="$presenter->isLinkCurrent(':Auth:Audit:*') ? is-active">Historie změn</a>{/if}
+			{if class_exists(Matodo\News\DI\NewsExtension::class)}
+				<div class="ma-sidebar__section">Obsah</div>
+				{if $user->isAllowed('news', 'view')}<a n:href=":News:News:default" n:class="$presenter->isLinkCurrent(':News:News:*') ? is-active">Novinky</a>{/if}
+				{if $user->isAllowed('article', 'view')}<a n:href=":News:Articles:default" n:class="$presenter->isLinkCurrent(':News:Articles:*') ? is-active">Články</a>{/if}
+				{if $user->isAllowed('news', 'categories') || $user->isAllowed('article', 'categories')}<a n:href=":News:Categories:default" n:class="$presenter->isLinkCurrent(':News:Categories:*') ? is-active">Kategorie</a>{/if}
+			{/if}
+			{ifset #nav}{include #nav}{/ifset}
+		</nav>
+	</aside>
+	<div class="ma-main">
+		<header class="ma-topbar">
+			<div></div>
+			<div class="ma-topbar__user">
+				{$user->getIdentity()?->username}
+				<a n:href=":Auth:Sign:out">Odhlásit</a>
+			</div>
+		</header>
+		<main class="ma-content">
+			<div n:foreach="$flashes as $flash" class="ma-flash ma-flash--{$flash->type}">{$flash->message}</div>
+			{include content}
+		</main>
+	</div>
+</div>
+{if class_exists(Matodo\Tinymce\DI\TinymceExtension::class)}
+	<script src="{$basePath}/assets/tinymce/tinymce.min.js"></script>
+	<script src="{$basePath}/assets/matodo-tinymce-init.js"></script>
+{/if}
+</body>
+</html>

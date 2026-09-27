@@ -1,0 +1,33 @@
+{block title}Skupiny{/block}
+
+{block content}
+<div class="ma-toolbar">
+	<h1>Skupiny</h1>
+	<a n:if="$user->isAllowed('group', 'create')" class="ma-btn" n:href="create">Přidat skupinu</a>
+</div>
+
+<table class="ma-table">
+	<tr>
+		<th>Název</th>
+		<th>Popis</th>
+		<th>Oprávnění</th>
+		<th>Členů</th>
+		<th></th>
+	</tr>
+	<tr n:foreach="$groups as $g">
+		<td>
+			{$g->getName()}
+			{if $g->isSystem()}<span class="ma-badge ma-badge--on">systémová</span>{/if}
+		</td>
+		<td>{$g->getDescription()}</td>
+		<td>{$g->isSuperuser() ? 'všechna (správce)' : count($g->getPermissions())}</td>
+		<td>{count($g->getUsers())}</td>
+		<td>
+			<a n:if="$user->isAllowed('group', 'edit')" class="ma-btn ma-btn--secondary ma-btn--small" n:href="edit $g->getId()">Upravit</a>
+			<a n:if="$user->isAllowed('group', 'delete') && !$g->isSystem()" class="ma-btn ma-btn--danger ma-btn--small" n:href="delete! $g->getId()"
+			   onclick="return confirm('Opravdu smazat skupinu {$g->getName()}?')">Smazat</a>
+		</td>
+	</tr>
+	<tr n:if="count($groups) === 0"><td colspan="5">Zatím žádné skupiny.</td></tr>
+</table>
+{/block}
